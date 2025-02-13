@@ -1,0 +1,45 @@
+// Define the database connection
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Use environment variable for security
+}
+
+// Define the Prisma Client generator
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User table with authentication and role
+model User {
+  id        String  @id @default(uuid())
+  email     String  @unique
+  password  String?
+  name      String
+  role      Role
+  createdAt DateTime @default(now())
+
+  // Relations
+  creatorProfile   CreatorProfile?
+  supporterProfile SupporterProfile?
+}
+
+// Role enumeration
+enum Role {
+  CREATOR
+  SUPPORTER
+}
+
+// Creator profile model
+model CreatorProfile {
+  userId   String  @id
+  user     User    @relation(fields: [userId], references: [id]) // Keep relation only on this side
+  bio      String?
+  image    String?
+}
+
+// Supporter profile model
+model SupporterProfile {
+  userId   String  @id
+  user     User    @relation(fields: [userId], references: [id]) // Keep relation only on this side
+  interests String?
+}

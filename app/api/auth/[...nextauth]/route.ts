@@ -1,18 +1,12 @@
-import type { NextAuthOptions } from "next-auth"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import CredentialsProvider from "next-auth/providers/credentials"
-import GoogleProvider from "next-auth/providers/google"
-import bcrypt from "bcrypt"
-import prisma from "@/lib/prisma"
-import NextAuth from "next-auth/next"
+import NextAuth, { NextAuthOptions, Session } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -21,51 +15,57 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          throw new Error("Missing email or password");
         }
+
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
-        })
-        if (!user || !user.hashedPassword) {
-          return null
+          where: { email: credentials.email },
+        });
+
+        if (!user || !user.password) {
+          throw new Error("User not found");
         }
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.hashedPassword)
-        if (!isPasswordValid) {
-          return null
+
+        const passwordMatch = await bcrypt.compare(credentials.password, user.password);
+        if (!passwordMatch) {
+          throw new Error("Invalid credentials");
         }
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        }
+
+        return user;
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token }: { session: Session; token: any }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+  },
   session: {
     strategy: "jwt",
   },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role
-      }
-      return session
-    },
-  },
-  pages: {
-    signIn: "/login",
-  },
+  secret: process.env.NEXTAUTH_SECRET,
+};
+
+// Fix TypeScript: Extend session user type
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    };
+  }
 }
 
-const handler = NextAuth(authOptions)
-export { handler as GET, handler as POST }
-
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
