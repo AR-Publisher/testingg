@@ -208,7 +208,7 @@ export default function Navigation() {
                       <li className="row-span-3">
                         <NavigationMenuLink asChild>
                           <Link
-                            href="/pricing"
+                            href="/pricing/corepricing"
                             className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                           >
                             <div className="text-sm font-medium leading-none">Powerful core features</div>
@@ -221,7 +221,7 @@ export default function Navigation() {
                       <li>
                         <NavigationMenuLink asChild>
                           <Link
-                            href="/pricing/pro"
+                            href="/pricing/propricing"
                             className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                           >
                             <div className="text-sm font-medium leading-none">Pro features</div>
@@ -270,10 +270,10 @@ export default function Navigation() {
             <Input type="search" placeholder="Find a Creator" className="w-[200px] pl-8 md:w-[300px]" />
           </div>
           <Button variant="outline" asChild>
-            <Link href="/login">Log in</Link>
+            <Link href="auth/login">Log in</Link>
           </Button>
           <Button className="bg-secondary hover:bg-secondary/90" asChild>
-            <Link href="/signup">Create on CreatorSpace</Link>
+            <Link href="auth/signup">Create on CreatorSpace</Link>
           </Button>
         </div>
       </div>

@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import Navigation from "@/components/navigation";
+import Footer from "@/components/footer";
 
 export default function VideoCreatorsPage() {
   return (
+    <>
+    <Navigation />
     <div className="relative min-h-screen">
       {/* Hero Section */}
       <div className="relative h-[600px]">
@@ -24,35 +28,66 @@ export default function VideoCreatorsPage() {
         </div>
       </div>
 
-      {/* AI-Generated Content Section */}
-      <div className="container mx-auto px-4 py-16">
+      {/* AI-Driven Growth Section */}
+      <div className="container mx-auto px-6 py-16">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h2 className="text-3xl font-bold">Why Video Creators Thrive Here</h2>
+            <h2 className="text-3xl font-bold">Grow Smarter with AI Insights</h2>
             <p className="text-lg text-muted-foreground">
-              Leverage our AI-powered analytics to understand viewer behavior and optimize content strategy. 
-              Our platform automatically suggests optimal posting times based on your audience's activity patterns.
+              Unlock AI-powered recommendations to increase engagement and maximize earnings.
+              Understand viewer preferences and optimize your video strategy effortlessly.
             </p>
             <ul className="space-y-4">
               <li className="flex items-center gap-3">
-                <span className="bg-primary/10 p-2 rounded-full">🎥</span>
-                <span>Smart content recommendations using machine learning</span>
+                <span className="bg-primary/10 p-2 rounded-full">🤖</span>
+                <span>AI-driven content suggestions tailored to your audience</span>
               </li>
               <li className="flex items-center gap-3">
-                <span className="bg-primary/10 p-2 rounded-full">📈</span>
-                <span>Predictive revenue forecasting based on engagement metrics</span>
+                <span className="bg-primary/10 p-2 rounded-full">💰</span>
+                <span>Revenue forecasting based on engagement trends</span>
               </li>
             </ul>
           </div>
           <Image
             src="https://images.unsplash.com/photo-1571772996211-2f02c9727629?q=80&w=2070&auto=format&fit=crop"
-            alt="Analytics"
+            alt="AI Insights"
             width={600}
             height={400}
-            className="rounded-xl shadow-xl"
+            className="rounded-xl shadow-xl w-full"
           />
         </div>
       </div>
+
+      {/* Interactive Community Section */}
+      <div className="bg-gray-100 py-16 px-6">
+        <div className="container mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <Image
+            src="https://images.unsplash.com/photo-1601584113042-422ea1376a0e?q=80&w=2070&auto=format&fit=crop"
+            alt="Community Engagement"
+            width={600}
+            height={400}
+            className="rounded-xl shadow-xl w-full"
+          />
+          <div className="space-y-6 text-center md:text-left">
+            <h2 className="text-3xl font-bold">Engage Like Never Before</h2>
+            <p className="text-lg text-muted-foreground">
+              Connect with your audience through live Q&A, fan polls, and exclusive behind-the-scenes content.
+            </p>
+            <ul className="space-y-4">
+              <li className="flex items-center gap-3">
+                <span className="bg-primary/10 p-2 rounded-full">🎙</span>
+                <span>Host live streams and exclusive premieres</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="bg-primary/10 p-2 rounded-full">💬</span>
+                <span>Foster discussions with premium community tools</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-  );
+    <Footer />
+  </>
+ );
 }

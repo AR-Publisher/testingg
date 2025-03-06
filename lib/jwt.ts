@@ -1,16 +1,22 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload, Secret, SignOptions } from "jsonwebtoken";
 
-const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
+const SECRET: Secret = process.env.JWT_SECRET as string;
+if (!SECRET) {
+  throw new Error("JWT_SECRET is missing in .env file");
+}
 
-export const generateToken = (payload: object, expiresIn: string = '7d'): string => {
-    return jwt.sign(payload, SECRET_KEY, { expiresIn });
-};
+// Function to sign JWT
+export function signJwt(payload: object, expiresIn: number = 3600): string {
+  const options: SignOptions = { expiresIn }; // expiresIn must be a number
+  return jwt.sign(payload, SECRET, options);
+}
 
-export const verifyToken = (token: string): object | null => {
-    try {
-        return jwt.verify(token, SECRET_KEY) as object;
-    } catch (error) {
-        console.error("Invalid token:", error);
-        return null;
-    }
-};
+// Function to verify JWT
+export function verifyJwt(token: string): JwtPayload | null {
+  try {
+    const decoded = jwt.verify(token, SECRET);
+    return typeof decoded === "string" ? null : (decoded as JwtPayload);
+  } catch (error) {
+    return null;
+  }
+}

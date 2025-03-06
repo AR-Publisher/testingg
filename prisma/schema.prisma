@@ -1,7 +1,7 @@
 // Define the database connection
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // Use environment variable for security
+  url      = env("DATABASE_URL")
 }
 
 // Define the Prisma Client generator
@@ -9,18 +9,36 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// User table with authentication and role
+// User model
 model User {
-  id        String  @id @default(uuid())
-  email     String  @unique
-  password  String?
-  name      String
-  role      Role
-  createdAt DateTime @default(now())
+  id         String         @id @default(uuid())
+  email      String         @unique
+  password   String?
+  name       String
+  username   String         @unique
+  role       Role           @default(SUPPORTER)
+  membership MembershipPlan @default(PRO) // ✅ New: Membership plan
+  createdAt  DateTime       @default(now())
+  plan     String @default("Free") // ✅ Add a default value
+
 
   // Relations
-  creatorProfile   CreatorProfile?
-  supporterProfile SupporterProfile?
+  creatorProfile    CreatorProfile?
+  supporterProfile  SupporterProfile?
+  posts             Post[]             @relation("UserPosts")
+  subscriptions     Subscription[]     @relation("UserSubscriptions")
+  likes             Like[]
+  comments          Comment[]
+  notifications     Notification[]
+  payouts           Payout[]           @relation("UserPayouts") // ✅ Fixed relation
+  withdrawalMethods WithdrawalMethod[]
+}
+
+// Membership Plans (New)
+enum MembershipPlan {
+  PRO // 5% cut
+  PREMIUM // 10% cut
+  ELITE // 15% cut (automated tax handling)
 }
 
 // Role enumeration
@@ -29,17 +47,157 @@ enum Role {
   SUPPORTER
 }
 
-// Creator profile model
+// Creator Profile
 model CreatorProfile {
-  userId   String  @id
-  user     User    @relation(fields: [userId], references: [id]) // Keep relation only on this side
-  bio      String?
-  image    String?
+  userId String  @id
+  user   User    @relation(fields: [userId], references: [id])
+  bio    String?
+  image  String?
+
+  subscriptions     Subscription[]     @relation("CreatorSubscriptions")
+  posts             Post[]
+  withdrawalMethods WithdrawalMethod[]
+  payouts           Payout[]           @relation("CreatorPayouts") // ✅ Fixed relation
 }
 
-// Supporter profile model
+// Supporter Profile
 model SupporterProfile {
-  userId   String  @id
-  user     User    @relation(fields: [userId], references: [id]) // Keep relation only on this side
+  userId    String  @id
+  user      User    @relation(fields: [userId], references: [id])
   interests String?
+
+  subscriptions Subscription[] @relation("SupporterSubscriptions")
+}
+
+// Subscription model
+model Subscription {
+  id String @id @default(uuid())
+
+  supporter   SupporterProfile @relation(fields: [supporterId], references: [userId], name: "SupporterSubscriptions")
+  supporterId String
+
+  creator   CreatorProfile @relation(fields: [creatorId], references: [userId], name: "CreatorSubscriptions")
+  creatorId String
+
+  user   User   @relation(fields: [userId], references: [id], name: "UserSubscriptions")
+  userId String
+}
+
+// Post model
+model Post {
+  id         String     @id @default(uuid())
+  title      String
+  content    String
+  image      String?
+  video      String?
+  fileUrls   String[]
+  visibility Visibility @default(PUBLIC)
+  createdAt  DateTime   @default(now())
+
+  creator   CreatorProfile @relation(fields: [creatorId], references: [userId])
+  creatorId String
+
+  user   User   @relation(fields: [userId], references: [id], name: "UserPosts")
+  userId String
+
+  likes    Like[]
+  comments Comment[]
+}
+
+// Enum for post visibility
+enum Visibility {
+  PUBLIC
+  SUPPORTERS_ONLY
+  PRIVATE
+}
+
+// Like model
+model Like {
+  id String @id @default(uuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
+}
+
+// Comments Model
+model Comment {
+  id        String   @id @default(uuid())
+  text      String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
+}
+
+// Notifications
+model Notification {
+  id        String   @id @default(uuid())
+  message   String
+  createdAt DateTime @default(now())
+  read      Boolean  @default(false)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+// Withdrawal Method model
+model WithdrawalMethod {
+  id        String         @id @default(uuid())
+  type      WithdrawalType
+  details   String
+  createdAt DateTime       @default(now())
+
+  creator   CreatorProfile @relation(fields: [creatorId], references: [userId])
+  creatorId String
+
+  payouts Payout[]
+  user    User?    @relation(fields: [userId], references: [id])
+  userId  String?
+}
+
+// Enum for withdrawal types
+enum WithdrawalType {
+  PAYPAL
+  STRIPE
+  BANK_TRANSFER
+}
+
+// Payout model (✅ Fixed relations)
+model Payout {
+  id        String       @id @default(uuid())
+  amount    Float
+  status    PayoutStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+
+  creator   User   @relation(fields: [creatorId], references: [id], name: "UserPayouts")
+  creatorId String
+
+  creatorProfile       CreatorProfile? @relation(fields: [creatorProfileUserId], references: [userId], name: "CreatorPayouts")
+  creatorProfileUserId String?
+
+  withdrawalMethod   WithdrawalMethod? @relation(fields: [withdrawalMethodId], references: [id])
+  withdrawalMethodId String?
+}
+
+// Enum for payout status
+enum PayoutStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+model TaxForm {
+  id        String  @id @default(uuid())
+  userId    String  @unique
+  formType  String
+  year      Int
+  status    String  // "Pending", "Generated"
+  fileUrl   String? // Link to the PDF
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
