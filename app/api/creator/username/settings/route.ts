@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 const ALLOWED_PLANS = ["Pro", "Premium", "Elite"];
 
 // UPDATE CREATOR PROFILE & MEMBERSHIP PLAN
-export async function PUT(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 

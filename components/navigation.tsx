@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Menu, X, ChevronDown } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,123 +12,41 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { useEffect } from "react";
 
 const creators = [
-  {
-    title: "Podcasters",
-    description: "Get to know your listeners",
-    href: "/creators/podcasters",
-    items: [
-      "Get to know your listeners",
-      "Cut through the noise",
-      "More ways to get paid",
-      "Other podcasters on CreatorSpace",
-    ],
-  },
-  {
-    title: "Video Creators",
-    description: "Turn your viewers into your people",
-    href: "/creators/video-creators",
-    items: [
-      "Turn your viewers into your people",
-      "Reach every fan, every time",
-      "More ways to get paid",
-      "Other video creators on CreatorSpace",
-    ],
-  },
-  {
-    title: "Musicians",
-    description: "From your mind to their ears",
-    href: "/creators/musicians",
-    items: [
-      "From your mind to their ears",
-      "Share more than music",
-      "More ways to get paid",
-      "Create musicians on CreatorSpace",
-    ],
-  },
-  {
-    title: "Artists",
-    description: "Earning made easy",
-    href: "/creators/artists",
-    items: [
-      "Earning made easy",
-      "Create what inspires you",
-      "Build community around your art",
-      "Other artists on CreatorSpace",
-    ],
-  },
-  {
-    title: "Game Devs",
-    description: "A safe way to get paid",
-    href: "/creators/game-devs",
-    items: [
-      "A safe way to get paid",
-      "Selling made simple",
-      "Where real community thrives",
-      "Other game devs on CreatorSpace",
-    ],
-  },
+  { title: "Podcasters", desc: "Get to know your listeners", href: "/creators/podcasters" },
+  { title: "Video Creators", desc: "Turn your viewers into your people", href: "/creators/video-creators" },
+  { title: "Musicians", desc: "From your mind to their ears", href: "/creators/musicians" },
+  { title: "Artists", desc: "Earning made easy", href: "/creators/artists" },
+  { title: "Game Devs", desc: "A safe way to get paid", href: "/creators/game-devs" },
 ];
 
 const features = [
-  {
-    title: "Create on your terms",
-    href: "/features/create",
-    items: ["Getting started on CreatorSpace", "Make it your own", "Reach every fan, every time", "Showcase your work"],
-  },
-  {
-    title: "Build real community",
-    href: "/features/community",
-    items: ["Every post, every time", "More ways to stay close", "Get to know your fans"],
-  },
-  {
-    title: "Expand your reach",
-    href: "/features/expand",
-    items: ["Bring in new fans", "Unlock growth", "App integrations"],
-  },
-  {
-    title: "Get business support",
-    href: "/features/support",
-    items: ["Help when you need it", "Policies to protect you", "Payments powered by CreatorSpace"],
-  },
-  {
-    title: "Earning made easy",
-    href: "/features/earning",
-    items: ["Run a membership", "Sell digital products"],
-  },
+  { title: "Create on your terms", desc: "Total creative freedom", href: "/features/create" },
+  { title: "Build real community", desc: "Engage with your audience", href: "/features/community" },
+  { title: "Expand your reach", desc: "Grow beyond limits", href: "/features/expand" },
+  { title: "Get business support", desc: "Tools to grow", href: "/features/support" },
+  { title: "Earning made easy", desc: "Monetization simplified", href: "/features/earning" },
+];
+
+const pricing = [
+  { title: "Pro Plan", desc: "Great for beginners", href: "/pricing/pro" },
+  { title: "Premium Plan", desc: "More tools, more reach", href: "/pricing/premium" },
+  { title: "Elite Plan", desc: "Maximize your earnings", href: "/pricing/elite" },
 ];
 
 const resources = [
-  {
-    title: "Creator Hub",
-    href: "/resources/hub",
-    items: ["Resources to get started", "Grow your membership", "Connect with creators"],
-  },
-  {
-    title: "Newsroom",
-    href: "/resources/news",
-    items: ["CreatorSpace HQ", "Read latest policy updates", "Explore product updates"],
-  },
-  {
-    title: "Help Center",
-    href: "/resources/help",
-    items: ["Getting started", "CreatorSpace payments", "Member management", "Content & engagement"],
-  },
-  {
-    title: "Partners & integrations",
-    href: "/resources/partners",
-    items: ["Featured integrations", "Full app directory"],
-  },
-  {
-    title: "Mobile",
-    href: "/resources/mobile",
-    items: ["Download the app"],
-  },
+  { title: "Creator Hub", desc: "Tips and guides for creators", href: "/resources/hub" },
+  { title: "Newsroom", desc: "Latest updates and stories", href: "/resources/news" },
+  { title: "Help Center", desc: "Find answers to common questions", href: "/resources/help" },
+  { title: "Partners & Integrations", desc: "Tools to boost your workflow", href: "/resources/partners" },
+  { title: "Mobile", desc: "Access Patrovaa on the go", href: "/resources/mobile" },
 ];
 
 export default function Navigation() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState("");
+
   useEffect(() => {
     const navbar = document.getElementById("navbar");
     const handleScroll = () => {
@@ -144,138 +63,125 @@ export default function Navigation() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
-      <div className="container flex h-16 items-center justify-between bg-transparent">
-        <div className="flex items-center gap-6 md:gap-10">
-          <Link href="/" className="font-bold text-2xl">
-            CreatorSpace
-          </Link>
+      <div className="container flex h-16 items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="font-bold text-2xl">
+          Patrovaa
+        </Link>
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-8">
           <NavigationMenu>
             <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>For Creators</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {creators.map((item) => (
-                      <li key={item.title}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={item.href}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">{item.title}</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              {item.description}
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Features</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {features.map((item) => (
-                      <li key={item.title}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={item.href}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">{item.title}</div>
-                            <ul className="mt-2 space-y-1">
-                              {item.items.map((subItem) => (
-                                <li key={subItem} className="text-sm text-muted-foreground">
-                                  {subItem}
-                                </li>
-                              ))}
-                            </ul>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Pricing</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="w-[400px] p-4 md:w-[500px] lg:w-[600px]">
-                    <div className="mb-3 text-lg font-medium">Starting a CreatorSpace is free</div>
-                    <ul className="grid gap-3 md:grid-cols-2">
-                      <li className="row-span-3">
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/pricing/corepricing"
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">Powerful core features</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              Everything you need to start earning
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href="/pricing/propricing"
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">Pro features</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              Advanced tools for growing creators
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
+              {[{ label: "For Creators", links: creators },
+                { label: "Features", links: features },
+                { label: "Pricing", links: pricing },
+                { label: "Resources", links: resources }
+              ].map((menu) => (
+                <NavigationMenuItem key={menu.label}>
+                  <NavigationMenuTrigger>{menu.label}</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid gap-3 p-4 w-[300px] md:w-[500px] md:grid-cols-2">
+                      {menu.links.map((item) => (
+                        <li key={item.title}>
+                          <NavigationMenuLink asChild>
+                            <Link href={item.href} className="block p-3 rounded-md hover:bg-accent">
+                              <div className="text-sm font-medium">{item.title}</div>
+                              <p className="text-xs text-gray-500">{item.desc}</p>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
                     </ul>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {resources.map((item) => (
-                      <li key={item.title}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={item.href}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">{item.title}</div>
-                            <ul className="mt-2 space-y-1">
-                              {item.items.map((subItem) => (
-                                <li key={subItem} className="text-sm text-muted-foreground">
-                                  {subItem}
-                                </li>
-                              ))}
-                            </ul>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              ))}
             </NavigationMenuList>
           </NavigationMenu>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input type="search" placeholder="Find a Creator" className="w-[200px] pl-8 md:w-[300px]" />
+
+          {/* Search Bar */}
+          <div className="relative hidden lg:flex">
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-500" />
+            <Input
+              type="text"
+              placeholder="Find a Creator"
+              className="pl-10 pr-4 py-2 border rounded-lg w-64"
+            />
           </div>
-          <Button variant="outline" asChild>
-            <Link href="auth/login">Log in</Link>
-          </Button>
-          <Button className="bg-secondary hover:bg-secondary/90" asChild>
-            <Link href="auth/signup">Create on CreatorSpace</Link>
-          </Button>
+
+          {/* Login & Create on Patrovaa */}
+          <div className="flex items-center gap-4">
+            <Link href="/login">
+              <Button variant="outline">Log in</Button>
+            </Link>
+            <Link href="/signup">
+              <Button className="bg-primary text-white">Create on Patrovaa</Button>
+            </Link>
+          </div>
         </div>
+
+        {/* Mobile Menu Button */}
+        <button className="md:hidden" onClick={() => setMobileMenuOpen(true)}>
+          <Menu className="h-6 w-6" />
+        </button>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 bg-black/60 z-50">
+            <div className="fixed top-0 left-0 w-4/5 h-full bg-white p-6 shadow-lg">
+              <button className="absolute top-4 right-4" onClick={() => setMobileMenuOpen(false)}>
+                <X className="h-6 w-6" />
+              </button>
+
+              {/* Mobile Navigation */}
+              <nav className="mt-10 space-y-4">
+                {[
+                  { label: "For Creators", links: creators },
+                  { label: "Features", links: features },
+                  { label: "Pricing", links: pricing },
+                  { label: "Resources", links: resources },
+                ].map((menu) => (
+                  <div key={menu.label}>
+                    <button
+                      className="flex justify-between w-full text-lg font-medium"
+                      onClick={() =>
+                        setOpenDropdown(openDropdown === menu.label ? "" : menu.label)
+                      }
+                    >
+                      {menu.label} <ChevronDown className="h-5 w-5" />
+                    </button>
+                    {openDropdown === menu.label && (
+                      <ul className="ml-4 mt-2 space-y-2">
+                        {menu.links.map((item) => (
+                          <li key={item.title}>
+                            <Link
+                              href={item.href}
+                              className="block text-sm text-gray-700"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              <div className="text-sm font-medium">{item.title}</div>
+                              <p className="text-xs text-gray-500">{item.desc}</p>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+
+                {/* Login & Create Buttons */}
+                <div className="mt-6 flex flex-col gap-4">
+                  <Link href="/login">
+                    <Button variant="outline" className="w-full">Log in</Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button className="w-full bg-primary text-white">Create on CreatorSpace</Button>
+                  </Link>
+                </div>
+              </nav>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

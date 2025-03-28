@@ -8,9 +8,9 @@ import ClientSessionProvider from "./ClientSessionProvider" // Import the Client
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "CreatorSpace - Support Creators You Love",
+  title: "Patrovaa - Empowering Creators",
   description:
-    "Join millions of creators monetizing their passion and building meaningful connections with their supporters.",
+    "Monetize your content and grow your audience on Patrovaa.",
 }
 
 export default function RootLayout({

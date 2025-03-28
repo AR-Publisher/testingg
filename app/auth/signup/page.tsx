@@ -101,8 +101,8 @@ export default function SignupPage() {
               onChange={handleChange}
             >
               <option value="PRO">Pro (5% Revenue Cut)</option>
-              <option value="PREMIUM">Premium (3% Revenue Cut)</option>
-              <option value="ELITE">Elite (1% Revenue Cut)</option>
+              <option value="PREMIUM">Premium (10% Revenue Cut)</option>
+              <option value="ELITE">Elite (15% Revenue Cut)</option>
             </select>
           )}
 
