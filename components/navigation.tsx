@@ -111,10 +111,10 @@ export default function Navigation() {
 
           {/* Login & Create on Patrovaa */}
           <div className="flex items-center gap-4">
-            <Link href="/login">
+            <Link href="auth/login">
               <Button variant="outline">Log in</Button>
             </Link>
-            <Link href="/signup">
+            <Link href="auth/signup">
               <Button className="bg-primary text-white">Create on Patrovaa</Button>
             </Link>
           </div>
@@ -171,10 +171,10 @@ export default function Navigation() {
 
                 {/* Login & Create Buttons */}
                 <div className="mt-6 flex flex-col gap-4">
-                  <Link href="/login">
+                  <Link href="auth/login">
                     <Button variant="outline" className="w-full">Log in</Button>
                   </Link>
-                  <Link href="/signup">
+                  <Link href="auth/signup">
                     <Button className="w-full bg-primary text-white">Create on CreatorSpace</Button>
                   </Link>
                 </div>

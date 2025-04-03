@@ -14,8 +14,8 @@ const tiers = [
   {
     name: "Basic",
     id: "basic",
-    priceMonthly: "price_1234",
-    priceYearly: "price_5678",
+    priceMonthly: "5%",
+    priceYearly: "50%",
     description: "Perfect for new creators starting their journey",
     features: [
       "Access to exclusive posts",
@@ -27,8 +27,8 @@ const tiers = [
   {
     name: "Pro",
     id: "pro",
-    priceMonthly: "price_1235",
-    priceYearly: "price_5679",
+    priceMonthly: "10%",
+    priceYearly: "100%",
     description: "For dedicated fans who want more interaction",
     features: [
       "All Basic features",
@@ -41,8 +41,8 @@ const tiers = [
   {
     name: "Premium",
     id: "premium",
-    priceMonthly: "price_1236",
-    priceYearly: "price_5680",
+    priceMonthly: "15%",
+    priceYearly: "150%",
     description: "The ultimate supporter experience",
     features: [
       "All Pro features",
@@ -87,7 +87,7 @@ export default function Pricing() {
                 </CardHeader>
                 <CardContent className="flex-grow">
                   <div className="text-4xl font-bold mb-6">
-                    ${isYearly ? tier.priceYearly : tier.priceMonthly}
+                    {isYearly ? tier.priceYearly : tier.priceMonthly}
                     <span className="text-sm font-normal text-muted-foreground">/{isYearly ? "year" : "month"}</span>
                   </div>
                   <ul className="space-y-3">
