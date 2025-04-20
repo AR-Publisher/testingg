@@ -38,7 +38,7 @@ const pricing = [
 const resources = [
   { title: "Creator Hub", desc: "Tips and guides for creators", href: "/resources/hub" },
   { title: "Newsroom", desc: "Latest updates and stories", href: "/resources/news" },
-  { title: "Help Center", desc: "Find answers to common questions", href: "/resources/help" },
+  { title: "Help Center", desc: "Find answers to common questions", href: "contact" },
   { title: "Partners & Integrations", desc: "Tools to boost your workflow", href: "/resources/partners" },
   { title: "Mobile", desc: "Access Patrovaa on the go", href: "/resources/mobile" },
 ];

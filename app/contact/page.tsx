@@ -11,15 +11,36 @@ export default function ContactPage() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send this data to your backend
-    console.log({ name, email, message })
-    // Reset form
-    setName("")
-    setEmail("")
-    setMessage("")
+    setLoading(true)
+    setSuccess(false)
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      })
+
+      const data = await res.json()
+      if (data.success) {
+        setSuccess(true)
+        setName("")
+        setEmail("")
+        setMessage("")
+      } else {
+        alert("Failed to send message.")
+      }
+    } catch (err) {
+      console.error(err)
+      alert("An error occurred.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -42,10 +63,13 @@ export default function ContactPage() {
               <Label htmlFor="message">Message</Label>
               <Textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)} required />
             </div>
+            {success && (
+              <p className="text-green-600 text-sm">Your message was sent successfully!</p>
+            )}
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
-              Send Message
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Sending..." : "Send Message"}
             </Button>
           </CardFooter>
         </form>
@@ -53,4 +77,3 @@ export default function ContactPage() {
     </div>
   )
 }
-

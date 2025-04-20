@@ -26,7 +26,7 @@ export default function SignupPage() {
 
     console.log("Sending data:", formData); // Debugging log
 
-    const res = await fetch("/api/auth/users/signup", {
+    const res = await fetch("/api/users/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
