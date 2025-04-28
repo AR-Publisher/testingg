@@ -1,4 +1,5 @@
 "use client";
+
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 
 const CreatorDashboard = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [coverImageUrl, setCoverImageUrl] = useState<string>(""); // ✅ State for uploaded cover
   const { data: session } = useSession();
   const params = useParams();
   const router = useRouter();
@@ -17,6 +19,14 @@ const CreatorDashboard = ({ children }: { children: React.ReactNode }) => {
   const paramUsername = Array.isArray(params?.username) ? params.username[0] : params?.username;
   const username = sessionUsername || (paramUsername ? decodeURIComponent(paramUsername) : "Unknown Creator");
   const profileImage = session?.user?.image || "/default-avatar.png";
+
+  // ✅ Load saved cover image from localStorage when page loads
+  useEffect(() => {
+    const savedCover = localStorage.getItem("coverImageUrl");
+    if (savedCover) {
+      setCoverImageUrl(savedCover);
+    }
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -32,6 +42,7 @@ const CreatorDashboard = ({ children }: { children: React.ReactNode }) => {
     { name: "Audience", path: `/creator/${username}/dashboard/audience` },
     { name: "Insights", path: `/creator/${username}/dashboard/insights` },
     { name: "Payouts", path: `/creator/${username}/dashboard/payouts` },
+    { name: "Tiers", path: `/creator/${username}/dashboard/tiers` },
     { name: "Promotions", path: `/creator/${username}/dashboard/promotions` },
     { name: "Community", path: `/creator/${username}/dashboard/community` },
     { name: "Notifications", path: `/creator/${username}/dashboard/notifications` },
@@ -42,11 +53,30 @@ const CreatorDashboard = ({ children }: { children: React.ReactNode }) => {
     coverInputRef.current?.click();
   };
 
-  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // ✅ Upload Cover, save in localStorage
+  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // You can implement file upload logic here
-      console.log("Selected cover file:", file);
+      const formData = new FormData();
+      formData.append("coverImage", file);
+
+      try {
+        const res = await fetch("/api/cover-upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          console.log("Cover uploaded:", data.fileUrl);
+          setCoverImageUrl(data.fileUrl);
+          localStorage.setItem("coverImageUrl", data.fileUrl); // ✅ Save in browser
+        } else {
+          console.error("Failed to upload cover image");
+        }
+      } catch (error) {
+        console.error("Error uploading cover image:", error);
+      }
     }
   };
 
@@ -109,7 +139,16 @@ const CreatorDashboard = ({ children }: { children: React.ReactNode }) => {
         {/* Main Content */}
         <main className="flex-1 p-6 lg:p-10">
           {/* Banner + Profile */}
-          <div className="relative bg-gradient-to-r from-orange-400 to-yellow-300 h-56 rounded-xl mb-6">
+          <div
+            className="relative h-56 rounded-xl mb-6"
+            style={{
+              backgroundImage: coverImageUrl
+                ? `url(${coverImageUrl})`
+                : "linear-gradient(to right, #f97316, #facc15)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
             <input
               type="file"
               accept="image/*"
@@ -141,6 +180,7 @@ const CreatorDashboard = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
 
+          {/* Edit Profile */}
           <div className="mt-14 mb-6 text-right">
             <Button
               variant="outline"
@@ -174,7 +214,7 @@ const CreatorDashboard = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
 
-          {/* Extra functionality: Create post inline shortcut */}
+          {/* Create Post Shortcut */}
           <div className="mt-6 text-center">
             <Link href={`/creator/${username}/dashboard/create-post`}>
               <Button className="bg-[#00ADB5] text-black px-6 py-3 rounded-lg text-lg font-semibold hover:bg-[#007F8B]">
@@ -183,7 +223,7 @@ const CreatorDashboard = ({ children }: { children: React.ReactNode }) => {
             </Link>
           </div>
 
-          {/* Render children if any */}
+          {/* Render children */}
           <div className="mt-10">{children}</div>
         </main>
       </div>

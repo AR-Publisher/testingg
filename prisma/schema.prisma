@@ -201,3 +201,13 @@ model TaxForm {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
+model Tier {
+  id          String   @id @default(cuid())
+  tierName    String
+  price       Float
+  description String
+  benefits    String[]
+  imageUrl    String?
+  creatorId   String // to relate to user (you can add this too if needed)
+  createdAt   DateTime @default(now())
+}
