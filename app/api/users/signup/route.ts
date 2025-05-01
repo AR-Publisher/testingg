@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prismadb"; // ✅ Correct import
 
 export async function POST(req: Request) {
   try {
-    const { username, name, email, password, role, plan } = await req.json();
+    const { username, name, email, password, role, membershipPlan } = await req.json();
 
     if (!username || !name || !email || !password || !role) {
       return NextResponse.json({ message: "All fields are required." }, { status: 400 });
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
         password: hashedPassword,
         name,
         role,
-        plan, // ✅ Now this works because 'plan' exists in the schema
+        membership: membershipPlan, // ✅ Now this works because 'plan' exists in the schema
       },
     });
 

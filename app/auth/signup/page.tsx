@@ -12,7 +12,7 @@ export default function SignupPage() {
     email: "",
     password: "",
     role: "CREATOR",
-    membershipPlan: "PRO", // Default plan
+    plan: "PRO", // ✅ Use 'plan' to match backend
   });
   const [error, setError] = useState("");
 
@@ -24,21 +24,24 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
 
-    console.log("Sending data:", formData); // Debugging log
+    // ✅ Trim email and username
+    const cleanedData = {
+      ...formData,
+      email: formData.email.trim(),
+      username: formData.username.trim(),
+    };
 
     const res = await fetch("/api/users/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(cleanedData),
     });
 
-    console.log("Response status:", res.status); // Debugging log
     if (res.ok) {
       router.push("/auth/login");
     } else {
       const { message } = await res.json();
       setError(message);
-      console.log("Error:", message); // Debugging log
     }
   };
 
@@ -80,7 +83,7 @@ export default function SignupPage() {
             className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={handleChange}
           />
-          
+
           {/* Role Selection */}
           <select
             name="role"
@@ -92,11 +95,11 @@ export default function SignupPage() {
             <option value="CREATOR">I'm a Creator</option>
           </select>
 
-          {/* Membership Plan Selection (Visible Only for Creators) */}
+          {/* Plan selection only for creators */}
           {formData.role === "CREATOR" && (
             <select
-              name="membershipPlan"
-              value={formData.membershipPlan}
+              name="plan"
+              value={formData.plan}
               className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={handleChange}
             >
@@ -106,7 +109,10 @@ export default function SignupPage() {
             </select>
           )}
 
-          <button type="submit" className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+          <button
+            type="submit"
+            className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
             Create Account
           </button>
         </form>

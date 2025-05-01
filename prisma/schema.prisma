@@ -9,7 +9,40 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// User model
+// ==================== Enums ====================
+
+enum MembershipPlan {
+  PRO // 5% cut
+  PREMIUM // 10% cut
+  ELITE // 15% cut
+}
+
+enum Role {
+  CREATOR
+  SUPPORTER
+  ADMIN // ✅ Added for Admin users
+}
+
+enum Visibility {
+  PUBLIC
+  SUPPORTERS_ONLY
+  PRIVATE
+}
+
+enum WithdrawalType {
+  PAYPAL
+  STRIPE
+  BANK_TRANSFER
+}
+
+enum PayoutStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+// ==================== Models ====================
+
 model User {
   id         String         @id @default(uuid())
   email      String         @unique
@@ -17,10 +50,9 @@ model User {
   name       String
   username   String         @unique
   role       Role           @default(SUPPORTER)
-  membership MembershipPlan @default(PRO) // ✅ New: Membership plan
+  membership MembershipPlan @default(PRO)
   createdAt  DateTime       @default(now())
-  plan     String @default("Free") // ✅ Add a default value
-
+  plan       String         @default("Free")
 
   // Relations
   creatorProfile    CreatorProfile?
@@ -30,24 +62,11 @@ model User {
   likes             Like[]
   comments          Comment[]
   notifications     Notification[]
-  payouts           Payout[]           @relation("UserPayouts") // ✅ Fixed relation
+  payouts           Payout[]           @relation("UserPayouts")
   withdrawalMethods WithdrawalMethod[]
+  tiers             Tier[] // ✅ Reverse relation to Tier
 }
 
-// Membership Plans (New)
-enum MembershipPlan {
-  PRO // 5% cut
-  PREMIUM // 10% cut
-  ELITE // 15% cut (automated tax handling)
-}
-
-// Role enumeration
-enum Role {
-  CREATOR
-  SUPPORTER
-}
-
-// Creator Profile
 model CreatorProfile {
   userId String  @id
   user   User    @relation(fields: [userId], references: [id])
@@ -57,10 +76,9 @@ model CreatorProfile {
   subscriptions     Subscription[]     @relation("CreatorSubscriptions")
   posts             Post[]
   withdrawalMethods WithdrawalMethod[]
-  payouts           Payout[]           @relation("CreatorPayouts") // ✅ Fixed relation
+  payouts           Payout[]           @relation("CreatorPayouts")
 }
 
-// Supporter Profile
 model SupporterProfile {
   userId    String  @id
   user      User    @relation(fields: [userId], references: [id])
@@ -69,7 +87,6 @@ model SupporterProfile {
   subscriptions Subscription[] @relation("SupporterSubscriptions")
 }
 
-// Subscription model
 model Subscription {
   id String @id @default(uuid())
 
@@ -83,7 +100,6 @@ model Subscription {
   userId String
 }
 
-// Post model
 model Post {
   id         String     @id @default(uuid())
   title      String
@@ -104,14 +120,6 @@ model Post {
   comments Comment[]
 }
 
-// Enum for post visibility
-enum Visibility {
-  PUBLIC
-  SUPPORTERS_ONLY
-  PRIVATE
-}
-
-// Like model
 model Like {
   id String @id @default(uuid())
 
@@ -122,7 +130,6 @@ model Like {
   postId String
 }
 
-// Comments Model
 model Comment {
   id        String   @id @default(uuid())
   text      String
@@ -135,7 +142,6 @@ model Comment {
   postId String
 }
 
-// Notifications
 model Notification {
   id        String   @id @default(uuid())
   message   String
@@ -146,7 +152,6 @@ model Notification {
   userId String
 }
 
-// Withdrawal Method model
 model WithdrawalMethod {
   id        String         @id @default(uuid())
   type      WithdrawalType
@@ -161,14 +166,6 @@ model WithdrawalMethod {
   userId  String?
 }
 
-// Enum for withdrawal types
-enum WithdrawalType {
-  PAYPAL
-  STRIPE
-  BANK_TRANSFER
-}
-
-// Payout model (✅ Fixed relations)
 model Payout {
   id        String       @id @default(uuid())
   amount    Float
@@ -185,22 +182,17 @@ model Payout {
   withdrawalMethodId String?
 }
 
-// Enum for payout status
-enum PayoutStatus {
-  PENDING
-  COMPLETED
-  FAILED
-}
 model TaxForm {
-  id        String  @id @default(uuid())
-  userId    String  @unique
+  id        String   @id @default(uuid())
+  userId    String   @unique
   formType  String
   year      Int
-  status    String  // "Pending", "Generated"
-  fileUrl   String? // Link to the PDF
+  status    String // "Pending", "Generated"
+  fileUrl   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
+
 model Tier {
   id          String   @id @default(cuid())
   tierName    String
@@ -208,6 +200,7 @@ model Tier {
   description String
   benefits    String[]
   imageUrl    String?
-  creatorId   String // to relate to user (you can add this too if needed)
+  creatorId   String
+  creator     User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
 }

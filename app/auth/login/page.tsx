@@ -26,14 +26,22 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
-      const { token, role } = await res.json();
+      const { token, role, username } = await res.json();
       localStorage.setItem("token", token);
-      router.push(role === "CREATOR" ? "/creator/${username}/dashboard" : "/dashboard");
+
+      if (role === "ADMIN") {
+        router.push("/admin/dashboard");
+      } else if (role === "CREATOR") {
+        router.push(`/creator/${username}/dashboard`);
+      } else {
+        router.push("/dashboard");
+      }
     } else {
       const { message } = await res.json();
       setError(message);
     }
   };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-md rounded-lg">
@@ -56,7 +64,10 @@ export default function LoginPage() {
             className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={handleChange}
           />
-          <button type="submit" className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+          <button
+            type="submit"
+            className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
             Log In
           </button>
         </form>
